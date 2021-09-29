@@ -7,27 +7,49 @@ Password :-
 Project ID :-
 
 
-Task 1: Create a project jumphost instance
+--> Task1
+gcloud compute instances create nucleus-jumphost \
+          --network nucleus-vpc \
+          --zone us-east1-b  \
+          --machine-type f1-micro  \
+          --image-family debian-9  \
+          --image-project debian-cloud
+          
+ --> Task2
+ 
+ Part1
+ 
+gcloud container clusters create nucleus-backend \
+          --num-nodes 1 \
+          --network nucleus-vpc \
+          --region us-east1
+          
+          
+gcloud container clusters get-credentials nucleus-backend \
+          --region us-east1
+          
+--------------------------------------------------------------
+Part2
 
-Navigation menu > Compute engine > VM Instance
 
 
-Task 2: Create a Kubernetes service cluster
-
-gcloud config set compute/zone us-east1-b
-
-gcloud container clusters create nucleus-webserver1
-
-gcloud container clusters get-credentials nucleus-webserver1
-
-kubectl create deployment hello-app --image=gcr.io/google-samples/hello-app:2.0
-
-kubectl expose deployment hello-app --type=LoadBalancer --port 8080
-
-kubectl get service 
+kubectl create deployment hello-server \
+          --image=gcr.io/google-samples/hello-app:2.0
+          
+---------------------------------------------------------------          
+Part3
 
 
-Task 3: Setup an HTTP load balancer
+kubectl expose deployment hello-server \
+          --type=LoadBalancer \
+          --port 8080
+
+--------------------------------------------------------------
+
+Task3
+
+Part1
+
 
 cat << EOF > startup.sh
 #! /bin/bash
@@ -37,67 +59,79 @@ service nginx start
 sed -i -- 's/nginx/Google Cloud Platform - '"\$HOSTNAME"'/' /var/www/html/index.nginx-debian.html
 EOF
 
-1 .Create an instance template :
+----------------------------------------------------------------
+Part2
 
-gcloud compute instance-templates create nginx-template \
---metadata-from-file startup-script=startup.sh
+gcloud compute instance-templates create web-server-template \
+          --metadata-from-file startup-script=startup.sh \
+          --network nucleus-vpc \
+          --machine-type g1-small \
+          --region us-east1
 
-2 .Create a target pool :
+-----------------------------------------------------------------
+Part 3
 
-gcloud compute target-pools create nginx-pool
+gcloud compute instance-groups managed create web-server-group \
+          --base-instance-name web-server \
+          --size 2 \
+          --template web-server-template \
+          --region us-east1
 
-3 .Create a managed instance group :
+------------------------------------------------------------------
+Part4
 
-gcloud compute instance-groups managed create nginx-group \
---base-instance-name nginx \
---size 2 \
---template nginx-template \
---target-pool nginx-pool
+gcloud compute firewall-rules create web-server-firewall \
+          --allow tcp:80 \
+          --network nucleus-vpc
 
-gcloud compute instances list
+-------------------------------------------------------------------
+Part5
 
-4 .Create a firewall rule to allow traffic (80/tcp) :
-
-gcloud compute firewall-rules create www-firewall --allow tcp:80
-
-gcloud compute forwarding-rules create nginx-lb \
---region us-east1 \
---ports=80 \
---target-pool nginx-pool
-
-gcloud compute forwarding-rules list
-
-5 .Create a health check :
-
+          
+          
 gcloud compute http-health-checks create http-basic-check
-
 gcloud compute instance-groups managed \
-set-named-ports nginx-group \
---named-ports http:80
+          set-named-ports web-server-group \
+          --named-ports http:80 \
+          --region us-east1
 
-6 .Create a backend service and attach the manged instance group :
+------------------------------------------------------------------
+Part6 
 
-gcloud compute backend-services create nginx-backend \
---protocol HTTP --http-health-checks http-basic-check --global
 
-gcloud compute backend-services add-backend nginx-backend \
---instance-group nginx-group \
---instance-group-zone us-east1-b \
---global
+gcloud compute backend-services create web-server-backend \
+          --protocol HTTP \
+          --http-health-checks http-basic-check \
+          --global
+          
+--------------------------------------------------------------------
+Part7
+          
+gcloud compute backend-services add-backend web-server-backend \
+          --instance-group web-server-group \
+          --instance-group-region us-east1 \
+          --global
 
-7 .Create a URL map and target HTTP proxy to route requests to your URL map :
+-------------------------------------------------------------------
+Part8
 
-gcloud compute url-maps create web-map \
---default-service nginx-backend
-
+gcloud compute url-maps create web-server-map \
+          --default-service web-server-backend
+          
+          
+-------------------------------------------------------------------
+Part9
+          
+          
 gcloud compute target-http-proxies create http-lb-proxy \
---url-map web-map
+          --url-map web-server-map
 
-8 .Create a forwarding rule :
+-------------------------------------------------------------------
+Part 10
+
 
 gcloud compute forwarding-rules create http-content-rule \
---global \
---target-http-proxy http-lb-proxy \
---ports 80
-
+        --global \
+        --target-http-proxy http-lb-proxy \
+        --ports 80
 gcloud compute forwarding-rules list
