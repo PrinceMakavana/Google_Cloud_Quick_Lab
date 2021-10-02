@@ -1,0 +1,57 @@
+Deploy and Manage Cloud Environments with Google Cloud: Challenge Lab
+
+username : 
+password:
+project id :
+
+Task - 1 :- 
+          start jampsot SSH
+		  
+		  CMD - 1 :- cd /work/dm/
+		  CMD - 2 :- sed -i s/SET_REGION/us-east1/g prod-network.yaml		  
+		  CMD - 3 :- gcloud deployment-manager deployments create prod-network --config=prod-network.yaml
+		  CMD - 4 :- gcloud config set compute/zone us-east1-b 
+		  CMd - 5 :- gcloud container clusters create kraken-prod --num-nodes 2 --network kraken-prod-vpc --subnetwork kraken-prod-subnet
+		  CMD - 6 :- cd /work/k8s
+		  CMD - 7 :- for F in $(ls *.yaml); do kubectl create -f $F; done 
+		  CMD - 8 :- kubectl get services 
+		  
+Task - 2 :-		  
+		  CMD - 1 :- clear 
+		  CMD - 2 :- gcloud config set compute/zone us-east1-b 
+		  CMD - 3 :- gcloud compute instances create kraken-admin --network-interface="subnet=kraken-mgmt-subnet" --network-interface="subnet=kraken-prod-subnet"
+		  
+		  35.229.36.148,35.227.111.107
+		  Navigation Menu > Monitoring > Alerting > add condition
+		  
+		  target :- VM instance 
+		            CPU utilization
+          filter :- instance name
+                      value :- kraken-admin
+          treshold :- 50
+
+		  Notificaton channel :-  email :- username - 1 
+		                          name :- project - id 
+		  Alert nam :- kraken-admin
+
+          save it		  
+		
+Task - 3 :- 
+				Navigation Menu >Kubernetes Engine > Services & Ingress
+				Go to spin-deck.
+					Click Port Forward.
+					Cloud Shell will open with the port forwarding command.
+					Click on the web preview icon on cloud shell open port 8080
+             			 
+				 goto cloud shell
+			CMD - 1 :- gcloud config set compute/zone us-east1-b
+			CMd - 2 :- gcloud source repos clone sample-app
+			CMd - 3 :- cd sample-app 
+			CMD - 4 :- touch a 
+			CMD - 5 :- git config --global user.email "$(gcloud config get-value account)"
+			CMD - 6 :- git config --global user.name "Student"
+			CMD - 7 :- git commit -a -m "change"
+			CMD - 8 :- git tag v1.0.1
+			CMD - 9 :- git push --tags 
+			start manual execution
+			
