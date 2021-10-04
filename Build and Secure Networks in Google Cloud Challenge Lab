@@ -1,0 +1,70 @@
+Build and Secure Networks in Google Cloud: Challenge Lab
+
+username : 
+password:
+project id :
+
+Task - 1 :-
+           Navigation Menu > VPC network > firewall >  delete all 
+		   
+Task - 2 :- 
+           Navigation Menu > VM instance > 
+		   
+		   select bastion 
+           click on run
+		   
+Task - 3 :- 
+            Navigation Menu > VPC network > firewall >
+			create firewall 
+			Name :- allow-ssh-from-lap
+			Network :- acme-vpc
+			Targets :- specify target tags 
+			target tags :- bastion
+			IP_address :- get from given link
+			tcp 22
+			
+			create
+			
+			Navigation Menu > VM instance > bastion
+		   edit 
+		   network teg :- bastion
+		   
+		   update
+Task - 4 :-
+          Navigation Menu > VPC network > firewall >
+		  create firewall
+		  name :- allow-http-ingress
+		  network :- acme-vpc
+		  Targets :- specify target tags 
+		  target-tags :- allow-http
+		  IP_address :- 0.0.0.0/0
+		  tcp 80
+		  
+		  create
+		  
+		  Navigation Menu > VM instance > juice-shop
+		  edit 
+		  network-tags :- allow-http
+		  update
+             
+           
+Task - 5 :- 
+            Navigation Menu > VM instance > juice-shop
+		  edit 
+		  add
+		  network-tags :- juice-shop
+		  update
+
+          Navigation Menu > VPC network > firewall >
+		  create fiaewall rule
+		  Name :- allow-ssh-for-acme-mgmt-subnet
+		  Network :- acme-vpc
+		  target-tags :- bastion ,juice-shop
+		  IP_address :-  Navigation Menu > VPC network > acme-mgmt-subnet > IP_address
+		  
+		  tcp 22
+		  
+		  create
+Task - 6 :- 
+           Navigation Menu > VM instance > bastion > ssh 
+		   in SSH :- ssh  [juice-shop Internal ip_address]
