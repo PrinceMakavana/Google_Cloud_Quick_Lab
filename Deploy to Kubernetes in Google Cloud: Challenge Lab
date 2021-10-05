@@ -1,0 +1,108 @@
+Task - 1 
+
+------Run in Cloud shell-----------
+gsutil cat gs://cloud-training/gsp318/marking/setup_marking.sh | bash
+gcloud source repos clone valkyrie-app
+cd valkyrie-app
+cat > Dockerfile <<EOF
+FROM golang:1.10
+WORKDIR /go/src/app
+COPY source .
+RUN go install -v
+ENTRYPOINT ["app","-single=true","-port=8080"]
+EOF
+docker build -t valkyrie-app:v0.0.1 .
+cd ..
+cd marking
+./step1.sh
+
+-------------------
+
+
+Task-2
+------Run in Cloud shell-----------
+cd ..
+cd valkyrie-app
+docker run -p 8080:8080 valkyrie-app:v0.0.1 &
+cd ..
+cd marking
+./step2.sh 
+
+ Run Port 8080
+ 
+Task-3
+------Run in Cloud shell-----------
+cd ..
+cd valkyrie-app
+docker tag valkyrie-app:v0.0.1 gcr.io/$GOOGLE_CLOUD_PROJECT/valkyrie-app:v0.0.1
+docker push gcr.io/$GOOGLE_CLOUD_PROJECT/valkyrie-app:v0.0.1
+
+Task-4
+------Run in Cloud shell-----------
+sed -i s#IMAGE_HERE#gcr.io/$GOOGLE_CLOUD_PROJECT/valkyrie-app:v0.0.1#g k8s/deployment.yaml
+gcloud container clusters get-credentials valkyrie-dev --zone us-east1-d
+kubectl create -f k8s/deployment.yaml
+kubectl create -f k8s/service.yaml
+
+Task-5
+------Run in Cloud shell-----------
+git merge origin/kurt-dev
+kubectl edit deployment valkyrie-dev
+
+ Edit File :-
+               replicas : 1 to 3
+			   (at the end) replicas : 1 to 0  
+
+
+docker build -t gcr.io/$GOOGLE_CLOUD_PROJECT/valkyrie-app:v0.0.2 .
+docker push gcr.io/$GOOGLE_CLOUD_PROJECT/valkyrie-app:v0.0.2
+kubectl edit deployment valkyrie-dev
+
+Edit file :- -> image -> viesion 0.0.1 to 0.0.2
+
+docker ps
+
+ container_id
+ 
+docker kill container_id
+
+
+export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/component=jenkins-master" -l "app.kubernetes.io/instance=cd" -o jsonpath="{.items[0].metadata.name}")
+kubectl port-forward $POD_NAME 8080:8080 >> /dev/null &
+printf $(kubectl get secret cd-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+
+Password :- 
+
+Run Port 8080
+
+CMD - gcloud source repos list
+
+in new teb 
+      login with
+	  
+	  Username :- admin
+      Password :- password_give_upper
+	  
+	  goto -> manage jenkins -> manage credentials -> global -> add some credentials
+	  select -> google service account from metadata
+	  click ok
+	  goto home 
+	  goto -> new item
+	  Name -> valkyrie-app 	
+	  select pipeline
+      click on ok
+
+goto pipline -> select -> pipline script  from SCM -> select SCM = git -> url = [url] -> select credentials -> click on save 	  
+
+------Run in Cloud shell-----------
+sed -i "s/green/orange/g" source/html.go
+sed -i "s/YOUR_PROJECT/$GOOGLE_CLOUD_PROJECT/g" Jenkinsfile
+git config --global user.email "ADD EMAIL ADDRESS"
+git config --global user.name "ADD GOOGLE ACCOUNT NAME"
+git add .
+git commit -m "build pipeline init"
+git push
+
+
+
+Wait to complete
