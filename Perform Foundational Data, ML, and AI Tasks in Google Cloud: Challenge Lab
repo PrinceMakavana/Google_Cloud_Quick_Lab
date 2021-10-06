@@ -1,0 +1,133 @@
+Perform Foundational Data, ML, and AI Tasks in Google Cloud: Challenge Lab
+
+username :- 
+Password :- 
+Project_ID :- 
+
+Tasks -1 :-
+            CMD - 1 :- gsutil cp gs://cloud-training/gsp323/lab.csv .
+            CMD - 2 :- gsutil cp gs://cloud-training/gsp323/lab.schema .
+            CMD - 3	:- cat lab.schema
+			
+			copy schema table
+			
+			[
+        {"type":"STRING","name":"guid"},
+        {"type":"BOOLEAN","name":"isActive"},
+        {"type":"STRING","name":"firstname"},
+        {"type":"STRING","name":"surname"},
+        {"type":"STRING","name":"company"},
+        {"type":"STRING","name":"email"},
+        {"type":"STRING","name":"phone"},
+        {"type":"STRING","name":"address"},
+        {"type":"STRING","name":"about"},
+        {"type":"TIMESTAMP","name":"registered"},
+        {"type":"FLOAT","name":"latitude"},
+        {"type":"FLOAT","name":"longitude"}
+    ]
+			
+			Navigation Menu->BigQuery->resources->project Id -> create dataset
+            Dataset Name :- lab -> create 
+            lab -> create table
+
+            Source :- google cloud storage   			
+			bucket -> gs://cloud-training/gsp323/lab.csv
+            Table Name -> customers
+            click on edit set 
+			
+			add schema table
+			create table
+			
+			Navigation Menu -> Storage ->Browser
+			
+			create Bucket 
+			bucket Name :- Project_ID
+			Create
+			
+			Navigation Menu -> Dataflow ->create job from templet
+			job name :- Project Id
+			template -> text fle on cloud storage to big query
+			
+			Advance :-
+			
+			javascript :- gs://cloud-training/gsp323/lab.js
+			Json Path :- gs://cloud-training/gsp323/lab.schema
+			javascript udf name :- transform
+			Big query Output table :- YOUR_PROJECT:lab.customers
+			cloud storeg input path :- gs://cloud-training/gsp323/lab.csv
+			Temporary BigQuery directory	gs://YOUR_PROJECT/bigquery_temp
+			Temporary location	gs://YOUR_PROJECT/temp
+			
+			run job
+			
+Task - 2 :- 
+            Navigation Menu-> dataproc -> clusters ->create clusters ->create
+             new made cluster -> vm instance -> first vm -> SSH
+             in SSh -> hdfs dfs -cp gs://cloud-training/gsp323/data.txt /data.txt 
+             exit from SSH
+            submit job 
+
+            Region	us-central1
+            Job type	Spark
+            Main class or jar	org.apache.spark.examples.SparkPageRank
+            Jar files	file:///usr/lib/spark/examples/jars/spark-examples.jar
+            Arguments	/data.txt			
+            
+            click on submit
+ 			
+Task - 3 :- 
+           Navigation Menu-> dataprep
+           Click on Import Data
+           Click on GCS
+           Edit -> gs://cloud-training/gsp323/runs.csv
+           click on Go
+           Click on Import&wrangle
+           go to column10 ->details 0->unice values ->failler-> delete row -> add
+           go to column9 -> filter row ->coustam filter ->
+           condition ->contains 
+           column -> column9
+           parten to match -> /(^0$|^0\.0$)/
+           delete MAtching rows
+           add
+
+           column2->rename -> runid
+           column3->rename -> userid
+           column4->rename -> labid
+           column5->rename -> lab_title
+           column6->rename -> start
+           column7->rename -> end
+           column8->rename -> time
+           column9->rename -> score
+           column10->rename -> state
+
+           click on 'Run job'
+		   click on 'Run job'
+		   
+Task - 4 :- 
+            Navigation Menu->API&services ->credencial->create credencial->API Key 
+            copy API key here
+			
+			API-KEY : 
+			
+            click on 'restrict key'			
+			click on save
+
+            after complete flow detais
+             in cloud shall 
+             CMD -1 :- export API_KEY=ADD Your API-KEY
+             CMD - 2 :- ls
+             CMD - 3 :- nano request.json
+              write 
+                   {
+                      "config":{
+                        "encoding":"FLAC",
+                        "languageCode": "en-US"
+                      },
+                    "audio": {
+					     "uri":"gs://cloud-training/gsp323/task4.flac"
+						 }
+					}
+              save and exit
+            CMD - 4 :- curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json "https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" > result.json
+            CMd - 5 :- gsutil cp result.json gs://qwiklabs-ADD_YOUR_PROJECT_ID-marking/task4-gcs.result
+            CMD - 6 :- cat result.json			
