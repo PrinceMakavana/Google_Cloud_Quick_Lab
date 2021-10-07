@@ -1,0 +1,61 @@
+Engineer Data in Google Cloud: Challenge Lab
+
+username :-
+Password :-
+Project ID :- 
+
+Task -1 :- 
+            Nevigation Menu -> big Query -> resources -> taxidieries -> hestorical_taxi_rides_row
+			
+			run query :- 
+			           CREATE OR REPLACE TABLE taxirides.taxi_training_data AS
+					   SELECT 
+					         pickup_datetime,
+                             pickup_longitude AS pickuplon,
+							 pickup_latitude AS pickuplat,
+							 dropoff_longitude AS dropofflon,
+							 dropoff_latitude AS dropofflat,
+							 passenger_count AS passengers,
+							 ( tolls_amount + fare_amount ) AS fare_amount
+							 FROM `taxirides.historical_taxi_rides_raw`
+                             WHERE trip_distance > 0
+							 AND pickup_longitude > -75
+							 AND pickup_longitude < -73
+							 AND dropoff_longitude > -75
+							 AND dropoff_longitude < -73
+							 AND pickup_latitude > 40
+							 AND pickup_latitude < 42
+							 AND dropoff_latitude > 40
+							 AND dropoff_latitude < 42
+							 AND passenger_count > 0
+							 AND RAND() < 99999 / 1031673361
+							 
+Task - 2 :- 							 
+            Run query :- 
+			             CREATE OR REPLACE MODEL taxirides.fare_model
+						 OPTIONS (model_type='linear_reg',labels=['fare_amount']) AS
+						 WITH taxitrips AS (
+						  SELECT *,
+						    ST_Distance(ST_GeogPoint(pickuplon, pickuplat),
+							ST_GeogPoint(dropofflon,dropofflat)) AS euclidean
+							FROM `taxirides.taxi_training_data` )
+							SELECT *
+							FROM taxitrips 
+							
+			Run query :- 
+			           SELECT SQRT(mean_squared_error) AS rmse
+						 FROM ML.EVALUATE(MODEL taxirides.fare_model, (
+						 WITH taxitrips AS (
+						  SELECT *,
+						    ST_Distance(ST_GeogPoint(pickuplon, pickuplat),
+							ST_GeogPoint(dropofflon,dropofflat)) AS euclidean
+							FROM `taxirides.taxi_training_data` )
+							SELECT *
+							FROM taxitrips
+                           			))
+									
+Task - 3 :- 									
+           Run query :- 
+		               SELECT * FROM ML.PREDICT(MODEL `taxirides.fare_model`, ( WITH taxitrips AS (
+						SELECT *, ST_Distance(ST_GeogPoint(pickuplon, pickuplat)   , ST_GeogPoint(dropofflon, dropofflat)) AS    euclidean FROM `taxirides.report_prediction_data` )
+							SELECT * FROM taxitrips ))
