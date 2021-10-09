@@ -1,0 +1,90 @@
+Explore Machine Learning Models with Explainable AI: Challenge Lab
+
+Username :-
+Password :-
+Project Id :- 
+
+Task 1 :- Create Notebook instance (us-centerl1)
+goto -> AI plateform -> new instance (Transflow 2.3 -> without GPU) -> create
+
+Goto Jupyter Lab -> click on terminal -> clone given repo 
+
+
+Task 2 :- create Bucket using project Name 
+
+Goto to Google cloud -> storage -> create bucket
+
+name : YOUR_PROJECT_ID
+
+click on create
+
+Next in Jupyter leb
+
+Task 3 :- 
+training-data-analyst/quests/dei/what-if-tool-challenge.ipynb
+
+
+Create and train your tensorflow models
+AT 2th terminal : 
+		model = Sequential()
+		model.add(layers.Dense(200, input_shape=(input_size,), activation='relu'))
+		model.add(layers.Dense(50, activation='relu'))
+		model.add(layers.Dense(20, activation='relu'))
+		model.add(layers.Dense(1, activation='sigmoid'))
+		model.compile(loss='mean_squared_error', optimizer='adam' , metrics=['accuracy'])
+        model.fit(train_data, train_labels ,epochs=10,batch_size=2048 , validation_split=0.1)			
+        
+		
+
+
+Train your second model on the limited dataset ->  1st terminal
+   edit :- 
+        limited_model = Sequential()
+		limited_model.add(layers.Dense(200, input_shape=(input_size,), activation='relu'))
+		limited_model.add(layers.Dense(50, activation='relu'))
+		limited_model.add(layers.Dense(20, activation='relu'))
+		limited_model.add(layers.Dense(1,activation='sigmoid'))
+		limited_model.compile(loss='mean_squared_error', optimizer='adam' , metrics=['accuracy'])
+        limited_model.fit(limited_train_data, limited_train_labels ,epochs=10,batch_size=2048 , validation_split=0.1)
+   
+Deploy Your Models To the AI platform 
+
+         Add Projct Id
+		 Add Bucket Name
+		 
+
+
+Complete Jupyter Book
+
+Goto -> AI Platform -> models -> create new 
+	1st : complete_model
+	
+	click create
+	
+	2nd : limited_model
+	
+	click create
+	
+	goto -> complete_model -> create version 
+	name : v1 
+	python version : 3.7
+	Framework : transflow
+	Framework version : 2.3.1
+	ML Runtime Version : 2.3
+	cloud storage : PROJECT_ID->saved_complete_model 
+	
+	click on save
+	
+	
+	goto ->  limited_model  -> create version  
+	
+	configuration as same as upper
+	cloud storage : PROJECT_ID->saved_limited_model
+	
+	click on save
+	
+	
+	NOW JUST WAIT TO COMPLETE (Min : 7minutes)
+	
+	   
+	   
