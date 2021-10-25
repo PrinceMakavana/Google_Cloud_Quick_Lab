@@ -17,10 +17,10 @@ Task - 3 :-
             Navigation Menu > VPC network > firewall >
 			create firewall 
 			Name :- allow-ssh-from-lap
-			Network :- acme-vpc
+ 			Network :- acme-vpc
 			Targets :- specify target tags 
 			target tags :- bastion
-			IP_address :- get from given link
+			IP_address :- 35.235.240.0/20
 			tcp 22
 			
 			create
