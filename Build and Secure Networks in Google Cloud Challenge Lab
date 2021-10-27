@@ -14,39 +14,19 @@ Task - 2 :-
            click on run
 		   
 Task - 3 :- 
-            Navigation Menu > VPC network > firewall >
-			create firewall 
-			Name :- allow-ssh-from-lap
- 			Network :- acme-vpc
-			Targets :- specify target tags 
-			target tags :- bastion
-			IP_address :- 35.235.240.0/20
-			tcp 22
-			
-			create
-			
-			Navigation Menu > VM instance > bastion
-		   edit 
-		   network teg :- bastion
-		   
-		   update
+	-> Run in cloud Shell
+
+            gcloud compute firewall-rules create [Add_YOUR_SSH_IAP_network_Tag] --allow=tcp:22 --source-ranges 35.235.240.0/20 --target-tags [Add_YOUR_SSH_IAP_network_Tag] --network acme-vpc
+
+	    gcloud compute instances add-tags bastion --tags=[Add_YOUR_SSH_IAP_network_Tag] --zone=us-central1-b
+	    
 Task - 4 :-
-          Navigation Menu > VPC network > firewall >
-		  create firewall
-		  name :- allow-http-ingress
-		  network :- acme-vpc
-		  Targets :- specify target tags 
-		  target-tags :- allow-http
-		  IP_address :- 0.0.0.0/0
-		  tcp 80
-		  
-		  create
-		  
-		  Navigation Menu > VM instance > juice-shop
-		  edit 
-		  network-tags :- allow-http
-		  update
-             
+	-> Run in cloud Shell
+        
+	 gcloud compute firewall-rules create [Add_YOUR_SSH_IAP_network_Tag] --allow=tcp:80 --source-ranges 0.0.0.0/0 --target-tags [Add_YOUR_SSH_IAP_network_Tag] --network acme-vpc
+
+	 gcloud compute instances add-tags juice-shop --tags=[Add_YOUR_SSH_IAP_network_Tag] --zone=us-central1-b
+     
            
 Task - 5 :- 
             Navigation Menu > VM instance > juice-shop
@@ -55,16 +35,13 @@ Task - 5 :-
 		  network-tags :- juice-shop
 		  update
 
-          Navigation Menu > VPC network > firewall >
-		  create fiaewall rule
-		  Name :- allow-ssh-for-acme-mgmt-subnet
-		  Network :- acme-vpc
-		  target-tags :- bastion ,juice-shop
-		  IP_address :-  Navigation Menu > VPC network > acme-mgmt-subnet > IP_address
-		  
-		  tcp 22
-		  
-		  create
+	-> Run in cloud Shell
+	
+          gcloud compute firewall-rules create [Add_YOUR_SSH_IAP_network_Tag] --allow=tcp:22 --source-ranges 192.168.10.0/24 --target-tags [Add_YOUR_SSH_IAP_network_Tag] --network acme-vpc
+
+	  gcloud compute instances add-tags juice-shop --tags=[Add_YOUR_SSH_IAP_network_Tag] --zone=us-central1-b
+
+
 Task - 6 :- 
            Navigation Menu > VM instance > bastion > ssh 
 		   in SSH :- ssh  [juice-shop Internal ip_address]
